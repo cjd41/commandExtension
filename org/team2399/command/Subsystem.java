@@ -54,7 +54,6 @@ public abstract class Subsystem implements NamedSendable {
    */
   public Subsystem(String name) {
     m_name = name;
-    Scheduler.getInstance().registerSubsystem(this);
   }
 
   /**
@@ -62,7 +61,6 @@ public abstract class Subsystem implements NamedSendable {
    */
   public Subsystem() {
     m_name = getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1);
-    Scheduler.getInstance().registerSubsystem(this);
     m_currentCommandChanged = true;
   }
 
