@@ -29,10 +29,6 @@ import edu.wpi.first.wpilibj.tables.ITable;
 public abstract class Subsystem implements NamedSendable {
 
   /**
-   * Whether or not getDefaultCommand() was called.
-   */
-  private boolean m_initializedDefaultCommand = false;
-  /**
    * The current command.
    */
   private Command m_currentCommand;
@@ -64,12 +60,6 @@ public abstract class Subsystem implements NamedSendable {
     m_currentCommandChanged = true;
   }
 
-  /**
-   * Initialize the default command for a subsystem By default subsystems have no default command,
-   * but if they do, the default command is set with this method. It is called on all Subsystems by
-   * CommandBase in the users program after all the Subsystems are created.
-   */
-  protected abstract void initDefaultCommand();
 
   /**
    * Sets the default command. If this is not called or is called with null, then there will be no
@@ -81,7 +71,7 @@ public abstract class Subsystem implements NamedSendable {
    * @param command the default command (or null if there should be none)
    * @throws IllegalUseOfCommandException if the command does not require the subsystem
    */
-  protected void setDefaultCommand(Command command) {
+  void setDefaultCommand(Command command) {
     if (command == null) {
       m_defaultCommand = null;
     } else {
@@ -115,11 +105,7 @@ public abstract class Subsystem implements NamedSendable {
    *
    * @return the default command
    */
-  protected Command getDefaultCommand() {
-    if (!m_initializedDefaultCommand) {
-      m_initializedDefaultCommand = true;
-      initDefaultCommand();
-    }
+  Command getDefaultCommand() {
     return m_defaultCommand;
   }
 

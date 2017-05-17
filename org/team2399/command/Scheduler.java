@@ -230,13 +230,14 @@ public class Scheduler implements NamedSendable {
 
   /**
    * Registers a {@link Subsystem} to this {@link Scheduler}, so that the {@link Scheduler} might
-   * know if a default {@link Command} needs to be run. All {@link Subsystem Subsystems} should call
-   * this.
+   * know if a default {@link Command} needs to be run. This method should be called
+   * for all {@link Subsystem Subsystems}.  
    *
    * @param system the system
    */
-  void registerSubsystem(Subsystem system) {
+  void registerSubsystem(Subsystem system, Command command) {
     if (system != null) {
+      system.setDefaultCommand(command);
       m_subsystems.add(system);
     }
   }
