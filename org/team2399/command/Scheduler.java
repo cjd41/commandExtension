@@ -71,13 +71,13 @@ public class Scheduler implements NamedSendable {
   /**
    * A list of all {@link Command Commands} which need to be added.
    */
-  private Vector m_additions = new Vector();
+  private Vector<Command> m_additions = new Vector<>();
   private ITable m_table;
   /**
    * A list of all {@link org.team2399.buttons.Trigger.ButtonScheduler Buttons}. It is
    * created lazily.
    */
-  private Vector m_buttons;
+  private Vector<ButtonScheduler> m_buttons;
   private boolean m_runningCommandsChanged;
 
   /**
@@ -111,7 +111,7 @@ public class Scheduler implements NamedSendable {
    */
   public void addButton(ButtonScheduler button) {
     if (m_buttons == null) {
-      m_buttons = new Vector();
+      m_buttons = new Vector<>();
     }
     m_buttons.addElement(button);
   }
@@ -195,7 +195,7 @@ public class Scheduler implements NamedSendable {
     // Get button input (going backwards preserves button priority)
     if (m_buttons != null) {
       for (int i = m_buttons.size() - 1; i >= 0; i--) {
-        ((ButtonScheduler) m_buttons.elementAt(i)).execute();
+        (m_buttons.elementAt(i)).execute();
       }
     }
     // Loop through the commands
@@ -211,7 +211,7 @@ public class Scheduler implements NamedSendable {
 
     // Add the new things
     for (int i = 0; i < m_additions.size(); i++) {
-      _add((Command) m_additions.elementAt(i));
+      _add(m_additions.elementAt(i));
     }
     m_additions.removeAllElements();
 
