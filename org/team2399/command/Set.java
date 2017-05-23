@@ -7,6 +7,7 @@
 
 package org.team2399.command;
 
+import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -14,30 +15,34 @@ import java.util.Vector;
 /**
  * A set.
  */
-class Set<E> implements Iterable<E> {
+class Set<E> extends AbstractSet<E> {
   private List<E> m_set = new Vector<E>();
 
   public Set() {
   }
 
-  public void add(E o) {
+  @Override
+  public boolean add(E o) {
     if (m_set.contains(o)) {
-      return;
+      return false;
     }
     m_set.add(o);
+    return true;
   }
 
-  public void add(Set<E> s) {
-    for (E e : s) {
-      add(e);
-    }
-  }
-
+  @Override
   public boolean contains(Object o) {
     return m_set.contains(o);
   }
 
+  @Override
   public Iterator<E> iterator() {
     return m_set.iterator();
+  }
+
+  @Override
+  public int size()
+  {
+	  return m_set.size();
   }
 }
