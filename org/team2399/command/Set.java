@@ -8,13 +8,14 @@
 package org.team2399.command;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
  * A set.
  */
 class Set<E> implements Iterable<E> {
-  private Vector<E> m_set = new Vector<E>();
+  private List<E> m_set = new Vector<E>();
 
   public Set() {
   }
@@ -23,7 +24,7 @@ class Set<E> implements Iterable<E> {
     if (m_set.contains(o)) {
       return;
     }
-    m_set.addElement(o);
+    m_set.add(o);
   }
 
   public void add(Set<E> s) {
