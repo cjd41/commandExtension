@@ -51,7 +51,7 @@ public class Scheduler implements NamedSendable {
   /**
    * The {@link Set} of all {@link Subsystem Subsystems}.
    */
-  private Set m_subsystems = new Set();
+  private Set<Subsystem> m_subsystems = new Set<>();
   /**
    * The first {@link Command} in the list.
    */
