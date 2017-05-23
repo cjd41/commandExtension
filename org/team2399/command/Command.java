@@ -62,7 +62,7 @@ public abstract class Command implements NamedSendable {
   /**
    * The requirements (or null if no requirements).
    */
-  private Set<Subsystem> m_requirements;
+  private VectorSet<Subsystem> m_requirements;
   /**
    * Whether or not it is running.
    */
@@ -191,7 +191,7 @@ public abstract class Command implements NamedSendable {
     validate("Can not add new requirement to command");
     if (subsystem != null) {
       if (m_requirements == null) {
-        m_requirements = new Set<>();
+        m_requirements = new VectorSet<>();
       }
       m_requirements.add(subsystem);
     } else {
@@ -392,7 +392,7 @@ public abstract class Command implements NamedSendable {
    * in {@link CommandGroup}.
    */
   protected void clearRequirements() {
-    m_requirements = new Set<>();
+    m_requirements = new VectorSet<>();
   }
 
   /**
