@@ -9,9 +9,11 @@ package org.team2399.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import edu.wpi.first.wpilibj.HLUsageReporting;
@@ -56,6 +58,12 @@ public class Scheduler implements NamedSendable {
    * The {@link Set} of all {@link Subsystem Subsystems}.
    */
   private Collection<Subsystem> m_subsystems = new VectorSet<>();
+  
+  /**
+   * The {@link Map} of all {@link Subsystem Subsystems} to their default {@link Command Commands}.
+   */
+  private Map<Subsystem, Command> m_defaultCommands = new HashMap<>();
+  
   /**
    * Whether or not we are currently adding a command.
    */
@@ -207,7 +215,7 @@ public class Scheduler implements NamedSendable {
     while (locks.hasNext()) {
       Subsystem lock = locks.next();
       if (lock.getCurrentCommand() == null) {
-        _add(lock.getDefaultCommand());
+        _add(m_defaultCommands.get(lock));
       }
       lock.confirmCommand();
     }
@@ -224,8 +232,22 @@ public class Scheduler implements NamedSendable {
    */
   void registerSubsystem(Subsystem system, Command command) {
     if (system != null) {
-      system.setDefaultCommand(command);
+    	Command defaultCommand = null;
+    	if (command != null) {
+    	      boolean found = false;
+    	      for(Iterator<Subsystem> requirements = command.getRequirements();
+    	    		  requirements.hasNext();) {
+    	        if (requirements.next().equals(system)) {
+    	          found = true;
+    	        }
+    	      }
+    	      if (!found) {
+    	        throw new IllegalUseOfCommandException("A default command must require the subsystem");
+    	      }
+    	      defaultCommand = command;
+    	    }
       m_subsystems.add(system);
+      m_defaultCommands.put(system, defaultCommand);
     }
   }
 
@@ -331,5 +353,10 @@ public class Scheduler implements NamedSendable {
   @Override
   public String getSmartDashboardType() {
     return "Scheduler";
+  }
+
+  Command getDefaultCommand(Subsystem subsystem)
+  {
+	  return m_defaultCommands.get(subsystem);
   }
 }

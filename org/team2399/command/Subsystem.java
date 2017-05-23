@@ -7,8 +7,6 @@
 
 package org.team2399.command;
 
-import java.util.Iterator;
-
 import edu.wpi.first.wpilibj.NamedSendable;
 import edu.wpi.first.wpilibj.tables.ITable;
 
@@ -35,10 +33,6 @@ public abstract class Subsystem implements NamedSendable {
   private boolean m_currentCommandChanged;
 
   /**
-   * The default command.
-   */
-  private Command m_defaultCommand;
-  /**
    * The name.
    */
   private String m_name;
@@ -62,51 +56,12 @@ public abstract class Subsystem implements NamedSendable {
 
 
   /**
-   * Sets the default command. If this is not called or is called with null, then there will be no
-   * default command for the subsystem.
-   *
-   * <p> <b>WARNING:</b> This should <b>NOT</b> be called in a constructor if the subsystem is a
-   * singleton. </p>
-   *
-   * @param command the default command (or null if there should be none)
-   * @throws IllegalUseOfCommandException if the command does not require the subsystem
-   */
-  void setDefaultCommand(Command command) {
-    if (command == null) {
-      m_defaultCommand = null;
-    } else {
-      boolean found = false;
-      Iterator<Subsystem> requirements = command.getRequirements();
-      while (requirements.hasNext()) {
-        if (requirements.next().equals(this)) {
-          found = true;
-          // } else {
-          // throw new
-          // IllegalUseOfCommandException("A default command cannot require multiple subsystems");
-        }
-      }
-      if (!found) {
-        throw new IllegalUseOfCommandException("A default command must require the subsystem");
-      }
-      m_defaultCommand = command;
-    }
-    if (m_table != null) {
-      if (m_defaultCommand != null) {
-        m_table.putBoolean("hasDefault", true);
-        m_table.putString("default", m_defaultCommand.getName());
-      } else {
-        m_table.putBoolean("hasDefault", false);
-      }
-    }
-  }
-
-  /**
    * Returns the default command (or null if there is none).
    *
    * @return the default command
    */
   Command getDefaultCommand() {
-    return m_defaultCommand;
+    return Scheduler.getInstance().getDefaultCommand(this);
   }
 
   /**
@@ -172,10 +127,12 @@ public abstract class Subsystem implements NamedSendable {
   @Override
   public void initTable(ITable table) {
     m_table = table;
+    
+    Command defaultCommand = Scheduler.getInstance().getDefaultCommand(this);
     if (table != null) {
-      if (m_defaultCommand != null) {
+      if (defaultCommand != null) {
         table.putBoolean("hasDefault", true);
-        table.putString("default", m_defaultCommand.getName());
+        table.putString("default", defaultCommand.getName());
       } else {
         table.putBoolean("hasDefault", false);
       }
