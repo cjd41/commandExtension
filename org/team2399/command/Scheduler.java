@@ -151,7 +151,7 @@ public class Scheduler implements NamedSendable {
       m_adding = true;
       requirements = command.getRequirements();
       while (requirements.hasNext()) {
-        Subsystem lock = (Subsystem) requirements.next();
+        Subsystem lock = requirements.next();
         if (lock.getCurrentCommand() != null) {
           lock.getCurrentCommand().cancel();
           remove(lock.getCurrentCommand());
@@ -218,7 +218,7 @@ public class Scheduler implements NamedSendable {
     // Add in the defaults
     Iterator<Subsystem> locks = m_subsystems.iterator();
     while (locks.hasNext()) {
-      Subsystem lock = (Subsystem) locks.next();
+      Subsystem lock = locks.next();
       if (lock.getCurrentCommand() == null) {
         _add(lock.getDefaultCommand());
       }
