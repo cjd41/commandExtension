@@ -7,13 +7,13 @@
 
 package org.team2399.command;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
  * A set.
  */
-class Set<E> {
+class Set<E> implements Iterable<E> {
   private Vector<E> m_set = new Vector<E>();
 
   public Set() {
@@ -27,9 +27,8 @@ class Set<E> {
   }
 
   public void add(Set<E> s) {
-    Enumeration<E> stuff = s.getElements();
-    for (Enumeration<E> e = stuff; e.hasMoreElements(); ) {
-      add(e.nextElement());
+    for (E e : s) {
+      add(e);
     }
   }
 
@@ -37,7 +36,7 @@ class Set<E> {
     return m_set.contains(o);
   }
 
-  public Enumeration<E> getElements() {
-    return m_set.elements();
+  public Iterator<E> iterator() {
+    return m_set.iterator();
   }
 }

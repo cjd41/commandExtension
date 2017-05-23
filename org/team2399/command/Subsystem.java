@@ -7,7 +7,7 @@
 
 package org.team2399.command;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import edu.wpi.first.wpilibj.NamedSendable;
 import edu.wpi.first.wpilibj.tables.ITable;
@@ -76,9 +76,9 @@ public abstract class Subsystem implements NamedSendable {
       m_defaultCommand = null;
     } else {
       boolean found = false;
-      Enumeration requirements = command.getRequirements();
-      while (requirements.hasMoreElements()) {
-        if (requirements.nextElement().equals(this)) {
+      Iterator<Subsystem> requirements = command.getRequirements();
+      while (requirements.hasNext()) {
+        if (requirements.next().equals(this)) {
           found = true;
           // } else {
           // throw new

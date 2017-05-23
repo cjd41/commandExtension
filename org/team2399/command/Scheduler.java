@@ -7,8 +7,8 @@
 
 package org.team2399.command;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import edu.wpi.first.wpilibj.HLUsageReporting;
@@ -139,9 +139,9 @@ public class Scheduler implements NamedSendable {
     if (!m_commandTable.containsKey(command)) {
 
       // Check that the requirements can be had
-      Enumeration requirements = command.getRequirements();
-      while (requirements.hasMoreElements()) {
-        Subsystem lock = (Subsystem) requirements.nextElement();
+      Iterator<Subsystem> requirements = command.getRequirements();
+      while (requirements.hasNext()) {
+        Subsystem lock = requirements.next();
         if (lock.getCurrentCommand() != null && !lock.getCurrentCommand().isInterruptible()) {
           return;
         }
@@ -150,8 +150,8 @@ public class Scheduler implements NamedSendable {
       // Give it the requirements
       m_adding = true;
       requirements = command.getRequirements();
-      while (requirements.hasMoreElements()) {
-        Subsystem lock = (Subsystem) requirements.nextElement();
+      while (requirements.hasNext()) {
+        Subsystem lock = (Subsystem) requirements.next();
         if (lock.getCurrentCommand() != null) {
           lock.getCurrentCommand().cancel();
           remove(lock.getCurrentCommand());
@@ -216,9 +216,9 @@ public class Scheduler implements NamedSendable {
     m_additions.removeAllElements();
 
     // Add in the defaults
-    Enumeration locks = m_subsystems.getElements();
-    while (locks.hasMoreElements()) {
-      Subsystem lock = (Subsystem) locks.nextElement();
+    Iterator<Subsystem> locks = m_subsystems.iterator();
+    while (locks.hasNext()) {
+      Subsystem lock = (Subsystem) locks.next();
       if (lock.getCurrentCommand() == null) {
         _add(lock.getDefaultCommand());
       }
@@ -262,9 +262,9 @@ public class Scheduler implements NamedSendable {
     }
     element.remove();
 
-    Enumeration requirements = command.getRequirements();
-    while (requirements.hasMoreElements()) {
-      ((Subsystem) requirements.nextElement()).setCurrentCommand(null);
+    Iterator<Subsystem> requirements = command.getRequirements();
+    while (requirements.hasNext()) {
+      (requirements.next()).setCurrentCommand(null);
     }
 
     command.removed();

@@ -7,7 +7,7 @@
 
 package org.team2399.command;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import edu.wpi.first.wpilibj.NamedSendable;
@@ -62,7 +62,7 @@ public abstract class Command implements NamedSendable {
   /**
    * The requirements (or null if no requirements).
    */
-  private Set m_requirements;
+  private Set<Subsystem> m_requirements;
   /**
    * Whether or not it is running.
    */
@@ -345,8 +345,8 @@ public abstract class Command implements NamedSendable {
    * @return the requirements (as an {@link Enumeration Enumeration} of {@link Subsystem
    * Subsystems}) of this command
    */
-  synchronized Enumeration getRequirements() {
-    return m_requirements == null ? emptyEnumeration : m_requirements.getElements();
+  synchronized Iterator<Subsystem> getRequirements() {
+    return m_requirements == null ? emptyIterator : m_requirements.iterator();
   }
 
   /**
@@ -537,16 +537,26 @@ public abstract class Command implements NamedSendable {
   /**
    * An empty enumeration given whenever there are no requirements.
    */
-  private static Enumeration emptyEnumeration = new Enumeration() {
+  private static Iterator<Subsystem> emptyIterator = makeEmptyIterator();
+  
+  
+  private static <E> Iterator<E> makeEmptyIterator()
+  {
+	  return new Iterator<E>() {
 
-    public boolean hasMoreElements() {
-      return false;
-    }
+		  public boolean hasNext() {
+			  return false;
+		  }
 
-    public Object nextElement() {
-      throw new NoSuchElementException();
-    }
-  };
+		  public E next() {
+			  throw new NoSuchElementException();
+		  }
+    
+		  public void remove() {
+			  throw new UnsupportedOperationException();
+		  }
+	  };
+  }
 
   /**
    * The string representation for a {@link Command} is by default its name.

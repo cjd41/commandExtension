@@ -7,7 +7,7 @@
 
 package org.team2399.command;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -88,8 +88,8 @@ public class CommandGroup extends Command {
     command.setParent(this);
 
     m_commands.addElement(new Entry(command, Entry.IN_SEQUENCE));
-    for (Enumeration e = command.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = command.getRequirements(); e.hasNext(); ) {
+      requires(e.next());
     }
   }
 
@@ -126,8 +126,8 @@ public class CommandGroup extends Command {
     command.setParent(this);
 
     m_commands.addElement(new Entry(command, Entry.IN_SEQUENCE, timeout));
-    for (Enumeration e = command.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = command.getRequirements(); e.hasNext(); ) {
+      requires(e.next());
     }
   }
 
@@ -161,8 +161,8 @@ public class CommandGroup extends Command {
     command.setParent(this);
 
     m_commands.addElement(new Entry(command, Entry.BRANCH_CHILD));
-    for (Enumeration e = command.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = command.getRequirements(); e.hasNext(); ) {
+      requires(e.next());
     }
   }
 
@@ -204,8 +204,8 @@ public class CommandGroup extends Command {
     command.setParent(this);
 
     m_commands.addElement(new Entry(command, Entry.BRANCH_CHILD, timeout));
-    for (Enumeration e = command.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = command.getRequirements(); e.hasNext(); ) {
+      requires(e.next());
     }
   }
 
@@ -292,9 +292,9 @@ public class CommandGroup extends Command {
       cmd.removed();
     }
 
-    Enumeration children = m_children.elements();
-    while (children.hasMoreElements()) {
-      Command cmd = ((Entry) children.nextElement()).m_command;
+    Iterator children = m_children.iterator();
+    while (children.hasNext()) {
+      Command cmd = ((Entry) children.next()).m_command;
       cmd._cancel();
       cmd.removed();
     }
@@ -367,11 +367,11 @@ public class CommandGroup extends Command {
     for (int i = 0; i < m_children.size(); i++) {
       Command child = ((Entry) m_children.elementAt(i)).m_command;
 
-      Enumeration requirements = command.getRequirements();
+      Iterator<Subsystem> requirements = command.getRequirements();
 
-      while (requirements.hasMoreElements()) {
-        Object requirement = requirements.nextElement();
-        if (child.doesRequire((Subsystem) requirement)) {
+      while (requirements.hasNext()) {
+        Subsystem requirement = requirements.next();
+        if (child.doesRequire(requirement)) {
           child._cancel();
           child.removed();
           m_children.removeElementAt(i--);

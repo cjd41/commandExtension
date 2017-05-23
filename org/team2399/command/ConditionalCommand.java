@@ -7,7 +7,7 @@
 
 package org.team2399.command;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * A {@link ConditionalCommand} is a {@link Command} that starts one of two commands.
@@ -70,12 +70,12 @@ public abstract class ConditionalCommand extends Command {
     m_onTrue = onTrue;
     m_onFalse = onFalse;
 
-    for (Enumeration e = m_onTrue.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = m_onTrue.getRequirements(); e.hasNext(); ) {
+      requires(e.next());
     }
 
-    for (Enumeration e = m_onFalse.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = m_onFalse.getRequirements(); e.hasNext(); ) {
+      requires((Subsystem) e.next());
     }
   }
 
@@ -105,12 +105,12 @@ public abstract class ConditionalCommand extends Command {
     m_onTrue = onTrue;
     m_onFalse = onFalse;
 
-    for (Enumeration e = m_onTrue.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = m_onTrue.getRequirements(); e.hasNext(); ) {
+      requires(e.next());
     }
 
-    for (Enumeration e = m_onFalse.getRequirements(); e.hasMoreElements(); ) {
-      requires((Subsystem) e.nextElement());
+    for (Iterator<Subsystem> e = m_onFalse.getRequirements(); e.hasNext(); ) {
+      requires((Subsystem) e.next());
     }
   }
 
