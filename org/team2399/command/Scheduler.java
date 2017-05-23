@@ -65,6 +65,11 @@ public class Scheduler implements NamedSendable {
   private Map<Subsystem, Command> m_defaultCommands = new HashMap<>();
   
   /**
+   * The {@link Map} of all {@link Subsystem Subsystems} to their current {@link Command Commands}.
+   */
+  private Map<Subsystem, Command> m_currentCommands = new HashMap<>();
+  
+  /**
    * Whether or not we are currently adding a command.
    */
   private boolean m_adding = false;
@@ -146,7 +151,8 @@ public class Scheduler implements NamedSendable {
       Iterator<Subsystem> requirements = command.getRequirements();
       while (requirements.hasNext()) {
         Subsystem lock = requirements.next();
-        if (lock.getCurrentCommand() != null && !lock.getCurrentCommand().isInterruptible()) {
+        Command currentCommand = m_currentCommands.get(lock);
+		if (currentCommand != null && !currentCommand.isInterruptible()) {
           return;
         }
       }
@@ -156,11 +162,12 @@ public class Scheduler implements NamedSendable {
       requirements = command.getRequirements();
       while (requirements.hasNext()) {
         Subsystem lock = requirements.next();
-        if (lock.getCurrentCommand() != null) {
-          lock.getCurrentCommand().cancel();
-          remove(lock.getCurrentCommand());
+        Command currentCommand = m_currentCommands.get(lock);
+		if (currentCommand != null) {
+          currentCommand.cancel();
+          remove(currentCommand);
         }
-        lock.setCurrentCommand(command);
+        m_currentCommands.put(lock, command);
       }
       m_adding = false;
 
@@ -214,7 +221,7 @@ public class Scheduler implements NamedSendable {
     Iterator<Subsystem> locks = m_subsystems.iterator();
     while (locks.hasNext()) {
       Subsystem lock = locks.next();
-      if (lock.getCurrentCommand() == null) {
+      if (m_currentCommands.get(lock) == null) {
         _add(m_defaultCommands.get(lock));
       }
       lock.confirmCommand();
@@ -264,7 +271,7 @@ public class Scheduler implements NamedSendable {
 
     Iterator<Subsystem> requirements = command.getRequirements();
     while (requirements.hasNext()) {
-      (requirements.next()).setCurrentCommand(null);
+      m_currentCommands.put(requirements.next(), null);
     }
 
     command.removed();
@@ -358,5 +365,10 @@ public class Scheduler implements NamedSendable {
   Command getDefaultCommand(Subsystem subsystem)
   {
 	  return m_defaultCommands.get(subsystem);
+  }
+
+  Command getCurrentCommand(Subsystem subsystem)
+  {
+	  return m_currentCommands.get(subsystem);
   }
 }

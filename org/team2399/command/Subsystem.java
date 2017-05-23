@@ -27,12 +27,6 @@ import edu.wpi.first.wpilibj.tables.ITable;
 public abstract class Subsystem implements NamedSendable {
 
   /**
-   * The current command.
-   */
-  private Command m_currentCommand;
-  private boolean m_currentCommandChanged;
-
-  /**
    * The name.
    */
   private String m_name;
@@ -51,7 +45,6 @@ public abstract class Subsystem implements NamedSendable {
    */
   public Subsystem() {
     m_name = getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1);
-    m_currentCommandChanged = true;
   }
 
 
@@ -65,32 +58,20 @@ public abstract class Subsystem implements NamedSendable {
   }
 
   /**
-   * Sets the current command.
-   *
-   * @param command the new current command
-   */
-  void setCurrentCommand(Command command) {
-    m_currentCommand = command;
-    m_currentCommandChanged = true;
-  }
-
-  /**
    * Call this to alert Subsystem that the current command is actually the command. Sometimes, the
    * {@link Subsystem} is told that it has no command while the {@link Scheduler} is going through
    * the loop, only to be soon after given a new one. This will avoid that situation.
    */
   void confirmCommand() {
-    if (m_currentCommandChanged) {
-      if (m_table != null) {
-        if (m_currentCommand != null) {
-          m_table.putBoolean("hasCommand", true);
-          m_table.putString("command", m_currentCommand.getName());
-        } else {
-          m_table.putBoolean("hasCommand", false);
-        }
-      }
-      m_currentCommandChanged = false;
-    }
+	  if (m_table != null) {
+		  Command currentCommand = Scheduler.getInstance().getCurrentCommand(this);
+		  if (currentCommand != null) {
+			  m_table.putBoolean("hasCommand", true);
+			  m_table.putString("command", currentCommand.getName());
+		  } else {
+			  m_table.putBoolean("hasCommand", false);
+		  }
+	  }
   }
 
   /**
@@ -99,7 +80,7 @@ public abstract class Subsystem implements NamedSendable {
    * @return the command which currently claims this subsystem
    */
   public Command getCurrentCommand() {
-    return m_currentCommand;
+    return Scheduler.getInstance().getCurrentCommand(this);
   }
 
   @Override
@@ -136,9 +117,10 @@ public abstract class Subsystem implements NamedSendable {
       } else {
         table.putBoolean("hasDefault", false);
       }
-      if (m_currentCommand != null) {
+      Command currentCommand = Scheduler.getInstance().getCurrentCommand(this);
+      if (currentCommand != null) {
         table.putBoolean("hasCommand", true);
-        table.putString("command", m_currentCommand.getName());
+        table.putString("command", currentCommand.getName());
       } else {
         table.putBoolean("hasCommand", false);
       }
