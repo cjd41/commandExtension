@@ -47,7 +47,7 @@ public class Scheduler implements NamedSendable {
   /**
    * A hashtable of active {@link Command Commands} to their {@link LinkedListElement}.
    */
-  private Hashtable m_commandTable = new Hashtable();
+  private Hashtable<Command, LinkedListElement> m_commandTable = new Hashtable<>();
   /**
    * The {@link Set} of all {@link Subsystem Subsystems}.
    */
