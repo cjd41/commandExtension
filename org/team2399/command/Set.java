@@ -10,26 +10,25 @@ package org.team2399.command;
 import java.util.Enumeration;
 import java.util.Vector;
 
-@SuppressWarnings("all")
 /**
  * A set.
  */
-class Set {
-  private Vector m_set = new Vector();
+class Set<E> {
+  private Vector<E> m_set = new Vector<E>();
 
   public Set() {
   }
 
-  public void add(Object o) {
+  public void add(E o) {
     if (m_set.contains(o)) {
       return;
     }
     m_set.addElement(o);
   }
 
-  public void add(Set s) {
-    Enumeration stuff = s.getElements();
-    for (Enumeration e = stuff; e.hasMoreElements(); ) {
+  public void add(Set<E> s) {
+    Enumeration<E> stuff = s.getElements();
+    for (Enumeration<E> e = stuff; e.hasMoreElements(); ) {
       add(e.nextElement());
     }
   }
@@ -38,7 +37,7 @@ class Set {
     return m_set.contains(o);
   }
 
-  public Enumeration getElements() {
+  public Enumeration<E> getElements() {
     return m_set.elements();
   }
 }
