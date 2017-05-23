@@ -7,8 +7,9 @@
 
 package org.team2399.command;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -48,19 +49,12 @@ public class Scheduler implements NamedSendable {
   /**
    * A hashtable of active {@link Command Commands} to their {@link LinkedListElement}.
    */
-  private Hashtable<Command, LinkedListElement> m_commandTable = new Hashtable<>();
+  private LinkedHashSet<Command> m_commandSet = new LinkedHashSet<>();
+  
   /**
    * The {@link Set} of all {@link Subsystem Subsystems}.
    */
   private Set<Subsystem> m_subsystems = new Set<>();
-  /**
-   * The first {@link Command} in the list.
-   */
-  private LinkedListElement m_firstCommand;
-  /**
-   * The last {@link Command} in the list.
-   */
-  private LinkedListElement m_lastCommand;
   /**
    * Whether or not we are currently adding a command.
    */
@@ -137,7 +131,7 @@ public class Scheduler implements NamedSendable {
     }
 
     // Only add if not already in
-    if (!m_commandTable.containsKey(command)) {
+    if (!m_commandSet.contains(command)) {
 
       // Check that the requirements can be had
       Iterator<Subsystem> requirements = command.getRequirements();
@@ -162,15 +156,7 @@ public class Scheduler implements NamedSendable {
       m_adding = false;
 
       // Add it to the list
-      LinkedListElement element = new LinkedListElement();
-      element.setData(command);
-      if (m_firstCommand == null) {
-        m_firstCommand = m_lastCommand = element;
-      } else {
-        m_lastCommand.add(element);
-        m_lastCommand = element;
-      }
-      m_commandTable.put(command, element);
+      m_commandSet.add(command);
 
       m_runningCommandsChanged = true;
 
@@ -199,11 +185,10 @@ public class Scheduler implements NamedSendable {
         (m_buttons.get(i)).execute();
       }
     }
+    // copy the set to avoid concurrent modification problems
+    List<Command> runningCommands = new ArrayList<>(m_commandSet);
     // Loop through the commands
-    LinkedListElement element = m_firstCommand;
-    while (element != null) {
-      Command command = element.getData();
-      element = element.getNext();
+    for(Command command : runningCommands) {
       if (!command.run()) {
         remove(command);
         m_runningCommandsChanged = true;
@@ -249,19 +234,10 @@ public class Scheduler implements NamedSendable {
    * @param command the command to remove
    */
   void remove(Command command) {
-    if (command == null || !m_commandTable.containsKey(command)) {
+    if (command == null || !m_commandSet.contains(command)) {
       return;
     }
-    LinkedListElement element = (LinkedListElement) m_commandTable.get(command);
-    m_commandTable.remove(command);
-
-    if (element.equals(m_lastCommand)) {
-      m_lastCommand = element.getPrevious();
-    }
-    if (element.equals(m_firstCommand)) {
-      m_firstCommand = element.getNext();
-    }
-    element.remove();
+    m_commandSet.remove(command);
 
     Iterator<Subsystem> requirements = command.getRequirements();
     while (requirements.hasNext()) {
@@ -276,9 +252,10 @@ public class Scheduler implements NamedSendable {
    */
   public void removeAll() {
     // TODO: Confirm that this works with "uninteruptible" commands
-    while (m_firstCommand != null) {
-      remove(m_firstCommand.getData());
-    }
+	// copy the set to avoid concurrent modification problems
+    List<Command> removals = new ArrayList<>(m_commandSet);
+	for(Command toRemove : removals)
+		remove(toRemove);
   }
 
   /**
@@ -318,10 +295,10 @@ public class Scheduler implements NamedSendable {
       // Get the commands to cancel
       double[] toCancel = m_table.getNumberArray("Cancel", new double[0]);
       if (toCancel.length > 0) {
-        for (LinkedListElement e = m_firstCommand; e != null; e = e.getNext()) {
+        for (Command c : m_commandSet) {
           for (int i = 0; i < toCancel.length; i++) {
-            if (e.getData().hashCode() == toCancel[i]) {
-              e.getData().cancel();
+            if (c.hashCode() == toCancel[i]) {
+              c.cancel();
             }
           }
         }
@@ -330,16 +307,13 @@ public class Scheduler implements NamedSendable {
 
       if (m_runningCommandsChanged) {
         // Set the the running commands
-        int number = 0;
-        for (LinkedListElement e = m_firstCommand; e != null; e = e.getNext()) {
-          number++;
-        }
+        int number = m_commandSet.size();
         String[] commands = new String[number];
         double[] ids = new double[number];
         number = 0;
-        for (LinkedListElement e = m_firstCommand; e != null; e = e.getNext()) {
-          commands[number] = e.getData().getName();
-          ids[number] = e.getData().hashCode();
+        for (Command c : m_commandSet) {
+          commands[number] = c.getName();
+          ids[number] = c.hashCode();
           number++;
         }
         m_table.putStringArray("Names", commands);
