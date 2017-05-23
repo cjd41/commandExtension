@@ -9,6 +9,7 @@ package org.team2399.command;
 
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import edu.wpi.first.wpilibj.HLUsageReporting;
@@ -71,13 +72,13 @@ public class Scheduler implements NamedSendable {
   /**
    * A list of all {@link Command Commands} which need to be added.
    */
-  private Vector<Command> m_additions = new Vector<>();
+  private List<Command> m_additions = new Vector<>();
   private ITable m_table;
   /**
    * A list of all {@link org.team2399.buttons.Trigger.ButtonScheduler Buttons}. It is
    * created lazily.
    */
-  private Vector<ButtonScheduler> m_buttons;
+  private List<ButtonScheduler> m_buttons;
   private boolean m_runningCommandsChanged;
 
   /**
@@ -99,7 +100,7 @@ public class Scheduler implements NamedSendable {
    */
   public void add(Command command) {
     if (command != null) {
-      m_additions.addElement(command);
+      m_additions.add(command);
     }
   }
 
@@ -113,7 +114,7 @@ public class Scheduler implements NamedSendable {
     if (m_buttons == null) {
       m_buttons = new Vector<>();
     }
-    m_buttons.addElement(button);
+    m_buttons.add(button);
   }
 
   /**
@@ -195,7 +196,7 @@ public class Scheduler implements NamedSendable {
     // Get button input (going backwards preserves button priority)
     if (m_buttons != null) {
       for (int i = m_buttons.size() - 1; i >= 0; i--) {
-        (m_buttons.elementAt(i)).execute();
+        (m_buttons.get(i)).execute();
       }
     }
     // Loop through the commands
@@ -211,9 +212,9 @@ public class Scheduler implements NamedSendable {
 
     // Add the new things
     for (int i = 0; i < m_additions.size(); i++) {
-      _add(m_additions.elementAt(i));
+      _add(m_additions.get(i));
     }
-    m_additions.removeAllElements();
+    m_additions.clear();
 
     // Add in the defaults
     Iterator<Subsystem> locks = m_subsystems.iterator();
