@@ -7,6 +7,7 @@
 
 package org.team2399.command;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -62,7 +63,7 @@ public abstract class Command implements NamedSendable {
   /**
    * The requirements (or null if no requirements).
    */
-  private VectorSet<Subsystem> m_requirements;
+  private Collection<Subsystem> m_requirements;
   /**
    * Whether or not it is running.
    */

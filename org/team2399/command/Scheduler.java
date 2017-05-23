@@ -8,6 +8,7 @@
 package org.team2399.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -52,9 +53,9 @@ public class Scheduler implements NamedSendable {
   private LinkedHashSet<Command> m_commandSet = new LinkedHashSet<>();
   
   /**
-   * The {@link VectorSet} of all {@link Subsystem Subsystems}.
+   * The {@link Set} of all {@link Subsystem Subsystems}.
    */
-  private VectorSet<Subsystem> m_subsystems = new VectorSet<>();
+  private Collection<Subsystem> m_subsystems = new VectorSet<>();
   /**
    * Whether or not we are currently adding a command.
    */
