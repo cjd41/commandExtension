@@ -237,7 +237,7 @@ public class Scheduler implements NamedSendable {
    *
    * @param system the system
    */
-  void registerSubsystem(Subsystem system, Command command) {
+  public void registerSubsystem(Subsystem system, Command command) {
     if (system != null) {
     	Command defaultCommand = null;
     	if (command != null) {
